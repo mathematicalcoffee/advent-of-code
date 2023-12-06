@@ -19,6 +19,7 @@ everything vectorised. The nested `*apply` are quite difficult to read.
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  06 | FUCK YEAH MATHS (after the morale-whooping received yesterday)                                                                               |
 |  05 | Just cannot work out the smart way to do it, but I'm so close to conceptualising it. Very frustrating. R is not suited to brute-forcing.     |
 |  04 | I feel like there is a sweet mathsy way to do part 2 but oh well, bring out the for-loop. Betraying everything R.                            |
 |  03 | "Overlaps" logic does my head in for some reason. Took much longer than it should. Part 2 was pleasingly trivial from the part 1 data.table. |
