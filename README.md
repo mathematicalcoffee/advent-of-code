@@ -19,6 +19,7 @@ everything vectorised. The nested `*apply` are quite difficult to read.
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  08 | Next time I'll try my "naive" part1 solution on part2 while programming up the more general part2 case, in case it turns out to be right :(  |
 |  07 | That was fun, though I had a brainfart moment and forgot that I should just multisort in "wide" format rather than long                      |
 |  06 | FUCK YEAH MATHS (after the morale-whooping received yesterday)                                                                               |
 |  05 | Just cannot work out the smart way to do it, but I'm so close to conceptualising it. Very frustrating. R is not suited to brute-forcing.     |
