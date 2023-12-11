@@ -19,6 +19,7 @@ everything vectorised. The nested `*apply` are quite difficult to read.
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  11 | I thought I was being smart but [@Steven's](https://github.com/stevetr14/aoc2033) observation was galaxy-brain level                         |
 |  10 | Quite fun. First time both answers were correct on the first try. Writing the intermediate outputs to file was surprisingly helpful.         |
 |  09 | I see the way they want us to do it and laugh _fits order20 polynomials instead_ what's the point of using R if you can't overkill with it?  |
 |  08 | Next time I'll try my "naive" part1 solution on part2 while programming up the more general part2 case, in case it turns out to be right :(  |
