@@ -19,6 +19,8 @@ everything vectorised. The nested `*apply` are quite difficult to read.
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  13 | Took way too long due to staying up til midnight trying to do day12 part2 lol                                                                |
+|  12 | AAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                                                                             |
 |  11 | I thought I was being smart but [@Steven's](https://github.com/stevetr14/aoc2023/blob/bbfaf5b7c4cba6537cbe3385b702a6fed53ab365/day_11.py#L56) observation was galaxy-brain level |
 |  10 | Quite fun. First time both answers were correct on the first try. Writing the intermediate outputs to file was surprisingly helpful.         |
 |  09 | I see the way they want us to do it and laugh _fits order20 polynomials instead_ what's the point of using R if you can't overkill with it?  |
