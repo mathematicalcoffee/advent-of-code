@@ -46,48 +46,68 @@ split_springs <- function(line) {
 }
 
 # ---------------------------- recursive shit ------------------------------- #
+
+# memo (current_char, char_i, group_i, n_allocated) is sufficient
+
 n_ways <- function(
     current_char, current_char_i, current_group_i, n_allocated_in_group, n_confirmed_springs_remaining, n_questionmarks_remaining, n_springs_left_to_allocate,
-    groups, chars
+    groups, chars, grouplen, charlen
 ) {
   # print(paste("n_ways(",paste(current_char, current_char_i, current_group_i, n_allocated_in_group, n_confirmed_springs_remaining, n_questionmarks_remaining, n_springs_left_to_allocate, sep=", "),")", sep=""))
+  if (is.na(current_char)) current_char <- "." # doesn't matter
+  val <- memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1]
+  if (!is.na(val)) {
+    return(val)
+  }
+  
   n <- 0
   next_char <- chars[current_char_i + 1]
   current_group_len <- groups[current_group_i]
   if (is.na(current_group_len)) current_group_len <- 0
   
   # stop conditions
-  if (n_springs_left_to_allocate == 0 && n_confirmed_springs_remaining == 0)
-    # no springs left to allocate and none observed in rest of spring - return 0
+  if (n_springs_left_to_allocate == 0 && n_confirmed_springs_remaining == 0) {
+    # no springs left to allocate and none observed in rest of spring - all good!
+    memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- 1
     return(1)
-  if (n_springs_left_to_allocate > (n_questionmarks_remaining + n_confirmed_springs_remaining))
+  }
+  if (n_springs_left_to_allocate > (n_questionmarks_remaining + n_confirmed_springs_remaining)) {
     # too many springs to put into too few spaces
+    memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- 0
     return(0)
-  if (n_confirmed_springs_remaining > n_springs_left_to_allocate)
+  }
+  if (n_confirmed_springs_remaining > n_springs_left_to_allocate) {
     # too many observed springs for what is left
+    memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- 0
     return(0)
+  }
   
   
-  if (current_char_i > length(chars)) {
+  if (current_char_i > charlen) {
     # end of string. we are legal if we used up all the springs
-    if (n_springs_left_to_allocate > 0)
+    if (n_springs_left_to_allocate > 0) {
+      memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- 0
       return (0)
-    else
+    } else {
+      memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- 1
       return(1)
+    }
   }
   if (current_char == "#") {
     if (n_allocated_in_group == current_group_len) {
       # we have too many in the group, this is illegal
+      memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- 0
       return(0)
-    } else if (current_group_i > length(groups)) {
+    } else if (current_group_i > grouplen) {
       # we have no groups left, this is illegal
+      memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- 0
       return(0)
     } else {
       # consume one more of the group
       n <- n + n_ways(
         next_char, current_char_i + 1, current_group_i, n_allocated_in_group + 1,
         n_confirmed_springs_remaining - 1, n_questionmarks_remaining, n_springs_left_to_allocate - 1,
-        groups, chars
+        groups, chars, grouplen, charlen
       )
     }
   } else if (current_char == ".") {
@@ -95,13 +115,14 @@ n_ways <- function(
     if (n_allocated_in_group > 0) {
       if (n_allocated_in_group < current_group_len) {
         # we are mid-way through a group we did not finish, this is illegal
+        memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- 0
         return(0)
       } else {
         # we finished the group, advanced the counter
         n <- n + n_ways(
           next_char, current_char_i + 1, current_group_i + 1, 0,
           n_confirmed_springs_remaining, n_questionmarks_remaining, n_springs_left_to_allocate,
-          groups, chars
+          groups, chars, grouplen, charlen
         )
       }
     } else {
@@ -109,18 +130,19 @@ n_ways <- function(
       n <- n + n_ways(
         next_char, current_char_i + 1, current_group_i, 0,
         n_confirmed_springs_remaining, n_questionmarks_remaining, n_springs_left_to_allocate,
-        groups, chars
+        groups, chars, grouplen, charlen
       )
     }
   } else {
     # re-play it as a '#' or as a '.'
     n <- n + n_ways(".", current_char_i, current_group_i, n_allocated_in_group,
                     n_confirmed_springs_remaining, n_questionmarks_remaining - 1, n_springs_left_to_allocate,
-                    groups, chars)
+                    groups, chars, grouplen, charlen)
     n <- n + n_ways("#", current_char_i, current_group_i, n_allocated_in_group,
                     n_confirmed_springs_remaining + 1, n_questionmarks_remaining - 1, n_springs_left_to_allocate,
-                    groups, chars)
+                    groups, chars, grouplen, charlen)
   }
+  memo[current_char, current_char_i, current_group_i, n_allocated_in_group + 1] <<- n
   return(n)
 }
 
@@ -135,7 +157,7 @@ raw <- stri_split_fixed(readLines(input_file), " ", n = 2)
 records <- lapply(raw, process_record)
 
 find_n_ways <- function (record) {
-  n_ways <- memoise(n_ways, omit_args=c('groups', 'chars'))
+  n_ways <- memoise(n_ways, omit_args=c('groups', 'chars', 'grouplen', 'charlen'))
   
   
   return(
@@ -148,11 +170,38 @@ find_n_ways <- function (record) {
       n_questionmarks_remaining=sum(record$chars == "?"),
       n_springs_left_to_allocate=sum(record$groups),
       record$groups,
-      record$chars)
+      record$chars,
+      length(record$groups),
+      length(record$chars))
   )
 }
 
-q1 <- sapply(records, find_n_ways)
+find_n_ways_manual_memo <- function (record) {
+  chars <- record$chars
+  groups <- record$groups
+  
+  memo <<- array(
+    dim=c(3, length(chars) + 1, length(groups) + 1, max(groups) + 1),
+    dimnames=list(c("#", "?", "."), NULL, NULL, NULL)
+  )
+  return(
+    n_ways(
+      current_char = chars[1],
+      current_char_i = 1,
+      current_group_i = 1,
+      n_allocated_in_group =0,
+      n_confirmed_springs_remaining=sum(chars == "#"),
+      n_questionmarks_remaining=sum(chars == "?"),
+      n_springs_left_to_allocate=sum(groups),
+      groups=groups,
+      chars=chars,
+      grouplen=length(groups),
+      charlen=length(chars))
+  )
+}
+
+#q1 <- sapply(records, find_n_ways)
+q1 <- sapply(records, find_n_ways_manual_memo)
 
 if (TESTS) {
   if (input_file == "input-small.txt") {
@@ -175,9 +224,10 @@ records_simplified <- lapply(records_unfolded, put_dots_around_known_springs)
 # on simplified records :::
 if (input_file == "input-small.txt") {
   print(system.time({
-    q2 <<- sapply(records_simplified, find_n_ways)
+    q2 <<- sapply(records_simplified, find_n_ways_manual_memo)
   }))
 }
+print(sum(q2), digits=20)
 # non-memoised
 # (vs the 11s of 12-blobs-and-groups)
 # user  system elapsed 
@@ -190,10 +240,9 @@ if (input_file == "input-small.txt") {
 # passing also # springs left, # springs left to fit, etc for quicker shortcuts
 # user  system elapsed 
 # 5.30    0.02   22.66  
-stop()
-output <- "output.txt"
-already_done <- read.table(output, header=F)$V1
-for (i in setdiff(seq_along(records_unfolded), already_done)) {
-  o <- find_n_ways(records_simplified[[i]])
-  cat(i, " ", o, "\n", sep="", file=output, append=TRUE)
-}
+# output <- "output.txt"
+# already_done <- read.table(output, header=F)$V1
+# for (i in setdiff(seq_along(records_unfolded), already_done)) {
+#   o <- find_n_ways_manual_memo(records_simplified[[i]])
+#   cat(i, " ", o, "\n", sep="", file=output, append=TRUE)
+# }
