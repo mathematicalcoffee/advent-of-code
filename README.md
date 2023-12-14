@@ -19,6 +19,7 @@ everything vectorised. The nested `*apply` are quite difficult to read.
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  14 | Cheesed it with visual insepction and a calculator. "Identified patterns" ;) because that implementation ain't fast                          |
 |  13 | Took way too long due to staying up til midnight trying to do day12 part2 lol                                                                |
 |  12 | AAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                                                                             |
 |  11 | I thought I was being smart but [@Steven's](https://github.com/stevetr14/aoc2023/blob/bbfaf5b7c4cba6537cbe3385b702a6fed53ab365/day_11.py#L56) observation was galaxy-brain level |
