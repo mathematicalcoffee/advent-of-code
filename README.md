@@ -19,6 +19,7 @@ everything vectorised. The nested `*apply` are quite difficult to read.
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  15 | The difficulty was in reading the instructions.                                                                                              |
 |  14 | Cheesed it with visual insepction and a calculator. "Identified patterns" ;) because that implementation ain't fast                          |
 |  13 | Took way too long due to staying up til midnight trying to do day12 part2 lol                                                                |
 |  12 | AAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH                                                                             |
