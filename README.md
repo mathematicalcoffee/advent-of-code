@@ -19,6 +19,7 @@ everything vectorised. The nested `*apply` are quite difficult to read.
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  16 | Frustrating - had to re-write the nature of the recursion because it got too many frames deep for R? (but only 10,282 function calls?)       |
 |  15 | The difficulty was in reading the instructions.                                                                                              |
 |  14 | Cheesed it with visual insepction and a calculator. "Identified patterns" ;) because that implementation ain't fast                          |
 |  13 | Took way too long due to staying up til midnight trying to do day12 part2 lol                                                                |
