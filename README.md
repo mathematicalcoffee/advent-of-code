@@ -15,6 +15,10 @@ Struggling a bit remembering how to be an R-soul, very different to being Python
 The data manipulation is stupidly easy once you construct the dataframe (`data.table` is an amazing package, far better
 than Pandas). But where in Python you'd just write for-loops and they would be easy to read, the R way is to do
 everything vectorised. The nested `*apply` are quite difficult to read.
+
+**Hard so far**: day 12, day 16. The common theme is recursive functions/efficiency in/managing R's "node stack" limit (whatever that is).
+And instead of trying to be efficient in the recursion, write the dumbest version first (e.g. move one character at a time rather than
+ fast-forwarding).
  
 
 | Day | Comment                                                                                                                                      |
