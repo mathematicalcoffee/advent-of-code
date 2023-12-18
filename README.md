@@ -23,6 +23,7 @@ And instead of trying to be efficient in the recursion, write the dumbest versio
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  17 | Wasted time going down the recursive function train of thought (because of last few days) before realising.                                  |
 |  16 | Frustrating - had to re-write the nature of the recursion because it got too many frames deep for R? (but only 10,282 function calls?)       |
 |  15 | The difficulty was in reading the instructions.                                                                                              |
 |  14 | Cheesed it with visual insepction and a calculator. "Identified patterns" ;) because that implementation ain't fast                          |
