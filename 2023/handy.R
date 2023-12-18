@@ -10,14 +10,14 @@ ij2i <- function(i, j, dims) {
 }
 
 # read a file into a matrix of 1 char each
-read_matrix <- function (filename) {
-  return(stri_list2matrix(
-    stri_split_boundaries(
-      readLines(filename),
-      type = "character"
-    ),
-    byrow = TRUE
-  ))
+read_matrix <- function (filename, numeric=FALSE) {
+  bits <- stri_split_boundaries(readLines(filename), type = "character")
+  if (numeric) {
+    bits <- lapply(bits, as.numeric)
+    return(do.call(rbind, bits))
+  } else {
+    return(stri_list2matrix(bits, byrow = TRUE))
+  }
 }
 
 # pretty-print a matrix as-is to file (if provided) or screen ("")
