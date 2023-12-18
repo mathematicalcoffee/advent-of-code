@@ -23,6 +23,7 @@ And instead of trying to be efficient in the recursion, write the dumbest versio
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  18 | Should have got that way sooner.                                                                                                             |
 |  17 | Wasted time going down the recursive function train of thought (because of last few days) before realising.                                  |
 |  16 | Frustrating - had to re-write the nature of the recursion because it got too many frames deep for R? (but only 10,282 function calls?)       |
 |  15 | The difficulty was in reading the instructions.                                                                                              |
@@ -40,3 +41,12 @@ And instead of trying to be efficient in the recursion, write the dumbest versio
 |  03 | "Overlaps" logic does my head in for some reason. Took much longer than it should. Part 2 was pleasingly trivial from the part 1 data.table. |
 |  02 | I LOVE `data.table`. But also, R lets you do `"5" < 15` without raising exception?!?! (and returns a bool)                                   |
 |  01 | imagine that - the function that said it "extracts the last match" doesn't. ✟ ℝ.𝕀.ℙ. ✟                                                       |
+
+
+Todo:
+
+* day 18
+  - implement shoestring formula for area-inside-poly
+* day 17
+  - optimise the creation of the adjacency-matrix (pre-allocate the sparse matrix OR don't make a matrix at all)
+  - write Dijkstra myself
