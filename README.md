@@ -23,7 +23,7 @@ And instead of trying to be efficient in the recursion, write the dumbest versio
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
-|  18 | Should have got that way sooner.                                                                                                             |
+|  18 | Should have got that way sooner. Gauss' shoelace formula is AMAZING                                                                          |
 |  17 | Wasted time going down the recursive function train of thought (because of last few days) before realising.                                  |
 |  16 | Frustrating - had to re-write the nature of the recursion because it got too many frames deep for R? (but only 10,282 function calls?)       |
 |  15 | The difficulty was in reading the instructions.                                                                                              |
@@ -45,8 +45,6 @@ And instead of trying to be efficient in the recursion, write the dumbest versio
 
 Todo:
 
-* day 18
-  - implement shoestring formula for area-inside-poly
 * day 17
   - optimise the creation of the adjacency-matrix (pre-allocate the sparse matrix OR don't make a matrix at all)
   - write Dijkstra myself
