@@ -23,6 +23,7 @@ And instead of trying to be efficient in the recursion, write the dumbest versio
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  19 | Picked the wrong direction to scale in for part 1 and had to abandon it entirely for part 2. Think like a programmer not a statistician :(   |
 |  18 | Should have got that way sooner. Gauss' shoelace formula is AMAZING                                                                          |
 |  17 | Wasted time going down the recursive function train of thought (because of last few days) before realising.                                  |
 |  16 | Frustrating - had to re-write the nature of the recursion because it got too many frames deep for R? (but only 10,282 function calls?)       |
