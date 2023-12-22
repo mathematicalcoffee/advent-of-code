@@ -121,6 +121,15 @@ if (FALSE) {
   #saveRDS(p2, file="visited.rds")
   # p2 <- n_nodes_visited(which(input == "S"), g, n, return_nodes=TRUE)
   # saveRDS(p2, file="visited-nodes.rds")
+
+  # obligatory - damn, if I'd seen this earlier I think I would have done this
+  #  "properly"
+  png(filename="map-part-2.png", width=131*5*2, height=131*5*2)
+  par(mar=c(0,0,0,0))
+  map <- ifelse(input == "#", 0, 1)
+  map[p2] <- 2
+  image(map, col=c("black", "white", "red"), xaxt="n", yaxt="n", useRaster=TRUE)
+  dev.off()
  
 }
 
@@ -155,3 +164,14 @@ print(predict(m_wtf, newdata=list(xx=26501365)), digits=20)
 
 # why the fuck does this work lol, that's disgusting
 
+# ----------------------------------------
+xy <- readRDS("visited-nodes.rds")
+dims <- c(131, 131) * 5
+xy <- i2ij(xy, dims)
+# partition into tiles
+
+xy <- cbind(
+  xy,
+  tile_i=((xy[, 1] - 1) %/% 131) + 1,
+  tile_j=((xy[, 2] - 1) %/% 131) + 1
+)

@@ -14,3 +14,7 @@ I think the way you are supposed to do it, is get your answer on a 5x5 tiling, a
 Calculate the `n` for each tile and then extrapolate out to however many tiles you need.
 
 It works because the input data has a clear corridor all the way to the edge (so 131 steps always gets you from the edge of one tile to the edge of the next), the requested number of steps is `(centre to edge) + n*(tile length)`. And they've cleared the diamond shape so that there aren't even any edge effects.
+
+Ahhh - this makes it a bit clearer
+
+![](./map-part-2.png)
