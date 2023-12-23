@@ -1,5 +1,7 @@
 # 2023
 
+[Gallery (spoilerish) here](./gallery.md)
+
 All this ascii art and elves makes me want to play nethack...(coffeebug on nethack.alt.org)
 
 ```
