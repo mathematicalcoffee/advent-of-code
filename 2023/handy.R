@@ -1,4 +1,5 @@
 i2ij <- function (i, dims) {
+  # col-major
   return(cbind(
     row=((i-1) %% dims[2]) + 1,
     col=((i - 1) %/% dims[2]) + 1
@@ -6,7 +7,8 @@ i2ij <- function (i, dims) {
 }
 
 ij2i <- function(i, j, dims) {
-  (i - 1) * dims[2] + j
+  # col-major
+  (j - 1) * dims[1] + i
 }
 
 # read a file into a matrix of 1 char each
