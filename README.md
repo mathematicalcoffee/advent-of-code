@@ -23,6 +23,7 @@ And instead of trying to be efficient in the recursion, write the dumbest versio
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  23 | Frustrating - turns out I had the correct approach very early on but ran into the slowness of R - tried Rcpp hours later and it ran in seconds. |
 |  22 | A nice breather (thank goodness)                                                                                                             |
 |  21 | I'm a dirty dirty statistician and I love it.                                                                                                |
 |  20 | Had a lot of difficulty reading this one, part 1 took me AGES. Part 2 was done by inspection and by hand.                                    |
