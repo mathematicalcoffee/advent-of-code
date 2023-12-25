@@ -25,6 +25,8 @@ And instead of trying to be efficient in the recursion, write the dumbest versio
 
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
+|  25 | Was gonna do it properly but visualising my data just so happened to point out the solution, so ... ¯\\_(ツ)_/¯              |
+|  24 | Very angry at this day, don't think it was a coding problem so much as a "use a library to do it for you"                                       |
 |  23 | Frustrating - turns out I had the correct approach very early on but ran into the slowness of R - tried Rcpp hours later and it ran in seconds. |
 |  22 | A nice breather (thank goodness)                                                                                                             |
 |  21 | I'm a dirty dirty statistician and I love it.                                                                                                |
