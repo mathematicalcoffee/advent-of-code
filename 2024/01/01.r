@@ -1,7 +1,7 @@
 rm(list=ls())
 library(stringi)
 library(data.table)
-source("../handy.R")
+source("../../handy.R")
 x <- read.table("input.txt", header=FALSE)
 first <- x$V1
 sec <- x$V2

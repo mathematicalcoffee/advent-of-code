@@ -82,3 +82,29 @@ print_matrix <- function (mat, with_coordinates=FALSE, file="", ...) {
   )
   return(mat_with_coords)
 }
+
+
+URL_FORMAT <- "https://adventofcode.com/2024/day/%i/input"
+COOKIE <- readLines("../AOC_SESSION_TOKEN")[1] # brittle...
+
+get_and_save_input <- function (day=NULL, file="input.txt") {
+  # get and save
+  if (file.exists(file) && file.info(file)$size > 0) {
+    return(readLines(file))
+  }
+  if (is.null(day)) {
+    # use the current dir
+    day <- basename(getwd())
+  }
+  message(sprintf("saving input file for day %s to %s", day, file))
+  input_data <- get_input_data(day)
+  writeLines(input_data, file)
+  return(input_data)
+  
+}
+get_input_data <- function (day) {
+  input_url <- sprintf(URL_FORMAT, as.integer(day))
+  input <- readLines(
+    con=url(input_url, headers=c(Cookie=sprintf("session=%s", COOKIE)))
+  )
+}
