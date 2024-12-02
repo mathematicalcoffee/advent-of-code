@@ -18,4 +18,5 @@ Language: R. Too lazy to learn IO in other languages.
 | Day | Comment                                                                                                                                      |
 |----:|----------------------------------------------------------------------------------------------------------------------------------------------|
 |  01 | Too much rubbish to read...                                                                                                                  |
+|  02 | Was going to do part 2 smart but convinced myself just-in-time to use a dirty dirty for-loop                                                 |
 
