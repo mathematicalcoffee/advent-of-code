@@ -1,3 +1,11 @@
+library(xml2)
+library(httr)
+library(stringi)
+
+INPUT_URL_FORMAT <- "https://adventofcode.com/2024/day/%i/input"
+QUESTION_URL_FORMAT <- "https://adventofcode.com/2024/day/%i"
+COOKIE <- readLines("../AOC_SESSION_TOKEN")[1] # brittle...
+
 i2ij <- function (i, dims) {
   # col-major
   return(cbind(
@@ -83,28 +91,73 @@ print_matrix <- function (mat, with_coordinates=FALSE, file="", ...) {
   return(mat_with_coords)
 }
 
+# input getters
 
-URL_FORMAT <- "https://adventofcode.com/2024/day/%i/input"
-COOKIE <- readLines("../AOC_SESSION_TOKEN")[1] # brittle...
-
-get_and_save_input <- function (day=NULL, file="input.txt") {
-  # get and save
-  if (file.exists(file) && file.info(file)$size > 0) {
-    return(readLines(file))
-  }
-  if (is.null(day)) {
-    # use the current dir
-    day <- basename(getwd())
-  }
-  message(sprintf("saving input file for day %s to %s", day, file))
-  input_data <- get_input_data(day)
-  writeLines(input_data, file)
-  return(input_data)
+get_example_input_data <- function (day) {
+  # returns ALL example datas... list of vectors.
   
+  # guess the first <code> block... no smarter than that.
+  input_url <- sprintf(QUESTION_URL_FORMAT, as.integer(day))
+  page <- read_html(url(input_url, headers=c(Cookie=sprintf("session=%s", COOKIE))))  # to get part 2 if relevant
+  ex_data <- stri_split_fixed(stri_trim(xml_text(xml_find_all(page, "//pre/code"))), "\n")
+  return(ex_data)
 }
+
 get_input_data <- function (day) {
-  input_url <- sprintf(URL_FORMAT, as.integer(day))
+  # must return a list
+  input_url <- sprintf(INPUT_URL_FORMAT, as.integer(day))
   input <- readLines(
     con=url(input_url, headers=c(Cookie=sprintf("session=%s", COOKIE)))
   )
+  return(list(input))
 }
+
+get_and_save_input_helper <- function (FUN, DEFAULT_FILENAME) {
+  bound <- function (day=NULL, file=DEFAULT_FILENAME) {
+    rds_file <- paste0(file, ".rds")
+    # get and save
+    if (file.exists(rds_file) && file.info(rds_file)$size > 0) {
+      return(readRDS(rds_file))
+    }
+    if (is.null(day)) {
+      # use the current dir
+      day <- basename(getwd())
+    }
+    all_input_data <- FUN(day)
+    multiple_inputs <- length(all_input_data) > 1
+    
+    # save files
+    file_names <- sprintf("%s.txt", file)
+    if (multiple_inputs) {
+      message("**multiple input data found - will save each in its own text file\n")
+      file_names <- sprintf("%s-%i.txt", file, seq_along(all_input_data))
+    }
+    for (i in seq_along(all_input_data)) {  # example data can have multiple
+      save_file(all_input_data[[i]], file_names[i])
+    }
+    # if length 1 then unlist it for convenience
+    if (!multiple_inputs)
+      all_input_data <- all_input_data[[1]]
+    
+    saveRDS(all_input_data, file=rds_file)
+   
+    return(all_input_data)
+  }
+  return(bound)
+}
+
+save_file <- function (lines, file) {
+  # save the vector of lines to a file
+  # Print a message.
+  # return the lines (invisibly)
+  message(sprintf("saving input data to %s", file))
+  to_print <- head(lines, 10)
+  if (length(lines) > 10) to_print <- c(to_print, "...")
+  message(paste(to_print, collapse="\n"))
+  message("")
+  writeLines(lines, file)
+  return(invisible(lines))
+}
+
+get_and_save_example_input <- get_and_save_input_helper(get_example_input_data, "input-example")
+get_and_save_input <- get_and_save_input_helper(get_input_data, "input")
