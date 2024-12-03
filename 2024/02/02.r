@@ -1,9 +1,11 @@
 rm(list=ls())
 library(stringi)
 library(data.table)
-source("../handy.R")
-lines <- readLines("input.txt")
-reports <- lapply(strsplit(lines, " "), as.integer)
+source("../../handy.R")
+ex <- get_and_save_example_input()
+input <- get_and_save_input()
+
+reports <- lapply(strsplit(input, " "), as.integer)
 
 is.safe <- function (report) {
     diffs <- diff(report)
@@ -17,7 +19,7 @@ print(sum(unlist(lapply(reports, is.safe))))
 # part 2 - for-loops are so dirty but so much easier to write lol
 # I am sure there is a smart way to do this but I don't know what it is
 nsafe <- 0
-for (i in 1:length(lines)) {
+for (i in 1:length(reports)) {
   original.report <- reports[[i]]
   
   for (j in 0:length(original.report)) {
