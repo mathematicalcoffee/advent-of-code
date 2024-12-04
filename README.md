@@ -20,4 +20,5 @@ Language: R. Too lazy to learn IO in other languages.
 |  01 | Too much rubbish to read...                                                                                                                  |
 |  02 | Was going to do part 2 smart but convinced myself just-in-time to use a dirty dirty for-loop                                                 |
 |  03 | regex is the best and you will never convince me otherwise. Also, I can't read :( (thought each newline was a new program)                   |
+|  04 | when part 2 and part 1 code are totally different (and none of it particularly good)... and it's only day 4                                  |
 
