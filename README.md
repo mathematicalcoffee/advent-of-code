@@ -23,4 +23,5 @@ Language: R. Too lazy to learn IO in other languages.
 |  04 | when part 2 and part 1 code are totally different (and none of it particularly good)... and it's only day 4                                  |
 |  05 | no particular comments                                                                                                                       |
 |  06 | when part 2 takes 5mins to run....didn't think of the smart thing (should make a cool pic for this one)                                      |
+|  07 | cranky...mucked up my concat function (refused to paste 2 strings together but mixed up ceil(x) for floor(x)+1 which only missed ~5 cases)   |
 
