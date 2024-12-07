@@ -22,4 +22,5 @@ Language: R. Too lazy to learn IO in other languages.
 |  03 | regex is the best and you will never convince me otherwise. Also, I can't read :( (thought each newline was a new program)                   |
 |  04 | when part 2 and part 1 code are totally different (and none of it particularly good)... and it's only day 4                                  |
 |  05 | no particular comments                                                                                                                       |
+|  06 | when part 2 takes 5mins to run....didn't think of the smart thing (should make a cool pic for this one)                                      |
 
