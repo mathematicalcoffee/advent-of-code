@@ -5,6 +5,7 @@ library(stringi)
 INPUT_URL_FORMAT <- "https://adventofcode.com/2024/day/%i/input"
 QUESTION_URL_FORMAT <- "https://adventofcode.com/2024/day/%i"
 COOKIE <- readLines("../AOC_SESSION_TOKEN")[1] # brittle...
+options(digits=20) # printing long ints
 
 i2ij <- function (i, dims) {
   # col-major
