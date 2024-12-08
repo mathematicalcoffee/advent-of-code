@@ -22,15 +22,17 @@ ij2i <- function(i, j, dims) {
 
 # read a file into a matrix of 1 char each
 read_matrix <- function (filename, numeric=FALSE) {
-  bits <- stri_split_boundaries(readLines(filename), type = "character")
-  if (numeric) {
-    bits <- lapply(bits, as.numeric)
-    return(do.call(rbind, bits))
-  } else {
-    return(stri_list2matrix(bits, byrow = TRUE))
-  }
+  return(lines2matrix(readLines(filename), numeric=numeric))
 }
 
+lines2matrix <- function (lines, numeric=FALSE) {
+  out <- stri_list2matrix(
+    stri_split_boundaries(lines, type="character"),
+    byrow=TRUE
+  )
+  if (numeric) out <- as.numeric(out)
+  return(out)
+}
 # pretty-print a matrix as-is to file (if provided) or screen ("")
 print_matrix <- function (mat, with_coordinates=FALSE, file="", ...) {
   # A printer for debugging, it's pretty damn cute
@@ -162,3 +164,5 @@ save_file <- function (lines, file) {
 
 get_and_save_example_input <- get_and_save_input_helper(get_example_input_data, "input-example")
 get_and_save_input <- get_and_save_input_helper(get_input_data, "input")
+
+is_wholenumber <- function(x) abs(x - round(x)) < .Machine$double.eps^0.5
