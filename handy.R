@@ -20,18 +20,24 @@ ij2i <- function(i, j, dims) {
   (j - 1) * dims[1] + i
 }
 
+in_bounds <- function (i, j, dims) {
+  return(
+    i >= 1 &
+    i <= dims[1] &
+    j >= 1 &
+    j <= dims[2] 
+  )
+}
+
 # read a file into a matrix of 1 char each
 read_matrix <- function (filename, numeric=FALSE) {
   return(lines2matrix(readLines(filename), numeric=numeric))
 }
 
 lines2matrix <- function (lines, numeric=FALSE) {
-  out <- stri_list2matrix(
-    stri_split_boundaries(lines, type="character"),
-    byrow=TRUE
-  )
-  if (numeric) out <- as.numeric(out)
-  return(out)
+  bits <- stri_split_boundaries(lines, type="character")
+  if (numeric) bits <- lapply(bits, as.numeric)
+  return(do.call(rbind, bits))
 }
 # pretty-print a matrix as-is to file (if provided) or screen ("")
 print_matrix <- function (mat, with_coordinates=FALSE, file="", ...) {
@@ -166,3 +172,30 @@ get_and_save_example_input <- get_and_save_input_helper(get_example_input_data, 
 get_and_save_input <- get_and_save_input_helper(get_input_data, "input")
 
 is_wholenumber <- function(x) abs(x - round(x)) < .Machine$double.eps^0.5
+
+# --------- graph ----------- #
+# library(igraph)
+adjacency_df <- function (dims) {
+  # df with a connection from every IJ to its neighbour (for constructing adjacency lists)
+  # might be easier/better to use make_lattice(dims, directed: bool) and add/remove vertices
+  df <- data.table(
+    expand.grid(
+      from.row=seq_len(dims[1]),
+      from.col=seq_len(dims[2])
+    )
+  )
+  df <- df[,
+     .(
+       to.row=c(from.row, from.row, from.row + 1, from.row - 1),
+       to.col=c(from.col - 1, from.col + 1, from.col, from.col)
+     ),
+     by=.(from.row, from.col)
+  ]
+  df <- df[in_bounds(to.row, to.col, dims)]
+  return(df)
+}
+
+
+# -------- ggplot --------- #
+style_base <- list(theme_minimal())
+matrix_style_base <- c(style_base, scale_y_reverse(), coord_fixed())
