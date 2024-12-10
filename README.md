@@ -26,4 +26,5 @@ Language: R. Too lazy to learn IO in other languages.
 |  07 | cranky...mucked up my concat function (refused to paste 2 strings together but mixed up ceil(x) for floor(x)+1 which only missed ~5 cases)   |
 |  08 | I AM A STATISTICIAN AND I WILL USE A REGRESSION IF I WANT TO                                                                                 |
 |  09 | harder than it should have been. my code is getting a bit embarrassing                                                                       |
+|  10 | mucked up my part 1 but it turned out to be the part 2 answer...                                                                             |
 
