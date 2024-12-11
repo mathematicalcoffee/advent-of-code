@@ -27,4 +27,5 @@ Language: R. Too lazy to learn IO in other languages.
 |  08 | I AM A STATISTICIAN AND I WILL USE A REGRESSION IF I WANT TO                                                                                 |
 |  09 | harder than it should have been. my code is getting a bit embarrassing                                                                       |
 |  10 | mucked up my part 1 but it turned out to be the part 2 answer...                                                                             |
+|  11 | took to long to remember about memoisation. My hand-made memoisation is faster than the package??                                            |
 
