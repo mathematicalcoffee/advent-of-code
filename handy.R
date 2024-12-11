@@ -100,6 +100,30 @@ print_matrix <- function (mat, with_coordinates=FALSE, file="", ...) {
   return(mat_with_coords)
 }
 
+# ---- rando utils for 
+n_digits <- function (int) {
+  # 999 -> 3 digits long
+  if (int == 0) return(1)
+  if (int < 0) return(n_digits(-int))
+  floor(log10(int)) + 1
+}
+left_half <- function (int) { # assumes n_digits is even
+  # left half of a number. 1234 -> 12
+  n <- n_digits(int)
+  stopifnot(n %% 2 == 0)
+  return(floor(int / 10^(n / 2)))
+}
+right_half <- function (int) {
+  # right half of a number. 1234 -> 34
+  n <- n_digits(int)
+  stopifnot(n %% 2 == 0)
+  return(int %% 10^(n / 2))
+}
+concat_ints <- function (left, right) {
+  # 12, 34 -> 1234
+  left * 10^n_digits(right) + right
+}
+
 # input getters
 
 get_example_input_data <- function (day) {
