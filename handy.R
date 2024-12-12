@@ -221,5 +221,6 @@ adjacency_df <- function (dims) {
 
 
 # -------- ggplot --------- #
+library(ggplot2)
 style_base <- list(theme_minimal())
 matrix_style_base <- c(style_base, scale_y_reverse(), coord_fixed())
