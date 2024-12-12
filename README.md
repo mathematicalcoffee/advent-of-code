@@ -28,4 +28,5 @@ Language: R. Too lazy to learn IO in other languages.
 |  09 | harder than it should have been. my code is getting a bit embarrassing                                                                       |
 |  10 | mucked up my part 1 but it turned out to be the part 2 answer...                                                                             |
 |  11 | took to long to remember about memoisation. My hand-made memoisation is faster than the package??                                            |
+|  12 | this kind of spatial/shape problem, I simply can't reason about properly. :(                                                                 |
 
