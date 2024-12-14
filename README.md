@@ -30,3 +30,6 @@ Language: R. Too lazy to learn IO in other languages.
 |  11 | took to long to remember about memoisation. My hand-made memoisation is faster than the package??                                            |
 |  12 | this kind of spatial/shape problem, I simply can't reason about properly. :(                                                                 |
 |  13 | Boring - easy maths and hard numerics. and THEN I had a working logic all along and turns out I forgot to multiply the A by 3 (I did in part 1 but somehow deleted that code in part 2) |
+|  14 | Bad part 2. Ascii art permits characters other than '1' and '.'.                                                                             |
+
+![Day 14](./2024/14/day14.png)
