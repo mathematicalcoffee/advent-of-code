@@ -29,4 +29,4 @@ Language: R. Too lazy to learn IO in other languages.
 |  10 | mucked up my part 1 but it turned out to be the part 2 answer...                                                                             |
 |  11 | took to long to remember about memoisation. My hand-made memoisation is faster than the package??                                            |
 |  12 | this kind of spatial/shape problem, I simply can't reason about properly. :(                                                                 |
-
+|  13 | Boring - easy maths and hard numerics. and THEN I had a working logic all along and turns out I forgot to multiply the A by 3 (I did in part 1 but somehow deleted that code in part 2) |

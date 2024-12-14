@@ -195,7 +195,7 @@ save_file <- function (lines, file) {
 get_and_save_example_input <- get_and_save_input_helper(get_example_input_data, "input-example")
 get_and_save_input <- get_and_save_input_helper(get_input_data, "input")
 
-is_wholenumber <- function(x) abs(x - round(x)) < .Machine$double.eps^0.5
+is_wholenumber <- function(x, tol = .Machine$double.eps ^ 0.5) abs(x - round(x)) < tol
 
 # --------- graph ----------- #
 # library(igraph)
