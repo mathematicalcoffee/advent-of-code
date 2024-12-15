@@ -31,5 +31,6 @@ Language: R. Too lazy to learn IO in other languages.
 |  12 | this kind of spatial/shape problem, I simply can't reason about properly. :(                                                                 |
 |  13 | Boring - easy maths and hard numerics. and THEN I had a working logic all along and turns out I forgot to multiply the A by 3 (I did in part 1 but somehow deleted that code in part 2) |
 |  14 | Bad part 2. Ascii art permits characters other than '1' and '.'.                                                                             |
+|  15 | Really struggling now (this is encroaching on my time too much - had to manually inspect the example step-by-step to find a bug somewhere between 300-350) |
 
 ![Day 14](./2024/14/day14.png)
