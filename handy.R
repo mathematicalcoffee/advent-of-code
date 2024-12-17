@@ -197,11 +197,91 @@ get_and_save_input <- get_and_save_input_helper(get_input_data, "input")
 
 is_wholenumber <- function(x, tol = .Machine$double.eps ^ 0.5) abs(x - round(x)) < tol
 
+
+# -------- ggplot --------- #
+library(ggplot2)
+style_base <- list(theme_minimal())
+matrix_style_base <- c(style_base, scale_y_reverse(), coord_fixed())
+
+# ----- grid? ------ #
+RIGHT <- 1
+LEFT <- 2
+UP <- 3
+DOWN <- 4
+ALL_DIRECTIONS <- c(RIGHT, LEFT, UP, DOWN)
+DIRECTION_LABELS <- c(">", "<", "^", "v") # match the 1/2/3/4
+# MUST match the 1/2/3/4 above
+LEFT_TURN <- c(UP, DOWN, LEFT, RIGHT)
+RIGHT_TURN <- c(DOWN, UP, RIGHT, LEFT)
+U_TURN <- c(LEFT, RIGHT, DOWN, UP)
+
+# dunno how to make this nice
+new_coords_vector <- function (ij, direction) {
+  # ij as a vector
+  return(c(new_i(ij[1], direction), new_j(ij[2], direction)))
+}
+new_coords_matrix <- function (ij) {
+  # ij as a matrix
+  return(
+    cbind(
+      new_i(ij[, 1], direction),
+      new_j(ij[, 2], direction)
+    )
+  )
+}
+new_i <- function (i, direction=c(LEFT, DOWN, RIGHT, UP)) {
+  if (!(direction %in% ALL_DIRECTIONS))
+    stop("Unknown direction")
+  return(
+    ifelse(direction == UP, i - 1,
+    ifelse(direction == DOWN, i + 1,
+     i))
+  )
+}
+new_j <- function (j, direction=c(LEFT, DOWN, RIGHT, UP)) {
+  if (!(direction %in% ALL_DIRECTIONS))
+    stop("Unknown direction")
+  return(
+    ifelse(direction == LEFT, j - 1,
+    ifelse(direction == RIGHT, j + 1,
+     j))
+  )
+}
+
+is_opposite_direction <- function (dir.from, dir.to) {
+  return(U_TURN[dir.from] == dir.to)
+}
+is_turn <- function(dir.from, dir.to, direction=c("both", "left", "right")) {
+  direction <- match.arg(direction)
+  out <- FALSE
+  if (direction %in% c("left", "both")) {
+    out <- out | dir.to == LEFT_TURN[dir.from]
+  }
+  if (direction %in% c("right", "both")) {
+    out <- out | dir.to == RIGHT_TURN[dir.from]
+  }
+  return(out)
+}
+
+is_in_direction <- function (from_i, from_j, to_i, to_j, direction) {
+  # is it EACTLY 1 STEP in direction
+  return(
+    new_i(from_i, direction) == to_i &
+    new_j(from_j, direction) == to_j
+  )
+}
+is_orthogonal_adjacent <- function (from_i, from_j, to_i, to_j) {
+  return(
+    abs(from_i - to_i) + abs(from_j - to_j) == 1
+  )
+}
+
 # --------- graph ----------- #
 # library(igraph)
 adjacency_df <- function (dims) {
   # df with a connection from every IJ to its neighbour (for constructing adjacency lists)
   # might be easier/better to use make_lattice(dims, directed: bool) and add/remove vertices
+  # can also make an edge-list from this
   df <- data.table(
     expand.grid(
       from.row=seq_len(dims[1]),
@@ -219,8 +299,157 @@ adjacency_df <- function (dims) {
   return(df)
 }
 
+# TODO: node costs.
+build_nodes <- function (grid) {
+  # datatable with 1 node per square on the grid, its symbol, and its coord
+  dims <- dim(grid)
+  nodes <- data.table(
+    expand.grid(
+      row=seq_len(dims[1]),
+      col=seq_len(dims[2])
+    )
+  )
+  nodes[, linear_i := ij2i(row, col, dims)]
+  nodes[, symbol := grid[cbind(row, col)]]
+  nodes[, node_label := sprintf("%i,%i", row, col)]
+  nodes[, node_id := linear_i]
+  nodes <- nodes[order(node_id)]
+  return(nodes)
+}
+build_edges <- function(nodes, is_valid_edge, ...) {
+  # better performance if you exclude bad nodes from the input list.
+  # datatable with 1 edge connecting nodes if the edge is valid
+  # is_valid_edge: function (from_node_row, to_node_row) -> bool
+  setkey(nodes, node_id)
+  edges <- nodes[
+    ,
+    .(to_node_id = nodes[is_valid_edge(.SD, nodes, ...), node_id]),
+    by=.(from_node_id=node_id)
+  ]
+  edges[, edge_id := .I]
+  edges[, edge_label := sprintf("%s -> %s", nodes[J(from_node_id), node_label], nodes[J(to_node_id), node_label])]
+  return(edges)
+}
+build_graph <- function (nodes, edges) {
+  g <- graph_from_edgelist(as.matrix(edges[, .(from_node_id, to_node_id)]), directed=TRUE)
+  # Note - disconnected vertices are in the graph unless they are off the end
+  # i.e. the # vertices is 1:max(vertice_id refereneced the edges)
+  missing_nodes <- setdiff(nodes$node_id, V(g))
+  if (length(missing_nodes))
+    g <- add_vertices(g, length(missing_nodes)) 
+  V(g)$label <- nodes[V(g), node_label]
+  V(g)$linear_i <- nodes[V(g), linear_i]
+  V(g)$row <- nodes[V(g), row]
+  V(g)$col <- nodes[V(g), col]
+  V(g)$symbol <- nodes[V(g), symbol]
+  E(g)$label <- edges$edge_label
+  if (!is.null(edges$cost))
+    E(g)$weight <- edges$cost
+  return(g)
+}
+plot_graph_on_grid <- function (g, edge.arrow.size=0.5, ...) {
+  # plot a graph that came from one of these helpers
+  # (expect attrs row, col, symbol)
+  # and probably a $symbol
+  plot(
+    g,
+    layout=cbind(V(g)$col, -V(g)$row),
+    vertex.shape="none",
+    vertex.label=V(g)$symbol,
+    edge.label=NA,
+    edge.arrow.size=edge.arrow.size,
+    ...
+  )
+}
+# like is_orthogonal_adjacent and is_in_direction but operating on nodes
+is_node_adjacent <- function(fromnode, tonode) {
+  is_orthogonal_adjacent(fromnode$row, fromnode$col, tonode$row, tonode$col)
+}
+is_node_in_direction <- function(fromnode, tonode) {
+  # is it EACTLY 1 STEP in direction (implies adjacent)
+  is_in_direction(fromnode$row, fromnode$col, tonode$row, tonode$col, fromnode$facing.direction)
+}
+build_orthogonal_edges <- function(nodes, impassibles, additional_edge_filter) {
+  # edges on a grid. connect if orthogonal and not impassible (character vector)
+  # the edge-filter-fun if provided can filter out further edges: fromrow, torow -> bool
+  if (missing(impassibles)) impassibles <- character(0)
+  if (missing(additional_edge_filter)) additional_edge_filter <- function (...) return(TRUE)
+  return(
+    build_edges(
+      nodes,
+      function (fromnode, tonode) {
+        !fromnode$symbol %in% impassibles &
+        !tonode$symbol %in% impassibles &
+        is_node_adjacent(fromnode, tonode) &
+        additional_edge_filter(fromnode, tonode)
+      }
+    )
+  )
+}
+# Here we have a graph representing (i, j, direction I am facing).
+# By default you can only walk to a square in the same direction you are facing.
+# There are self-loops to representing turning that can be costed separately
+# TODO: node costs.
+build_nodes_with_direction <- function(grid) {
+  nodes <- build_nodes(grid)
+  nodes <- nodes[, cbind(.SD, facing.direction=c(UP, DOWN, LEFT, RIGHT)), by=names(nodes)]
+  nodes[, node_label := sprintf("%i,%i facing %s", row, col, DIRECTION_LABELS[facing.direction])]
+  nodes[, node_id := .I]
+  return(nodes)
+}
 
-# -------- ggplot --------- #
-library(ggplot2)
-style_base <- list(theme_minimal())
-matrix_style_base <- c(style_base, scale_y_reverse(), coord_fixed())
+# EXAMPLE (grid-like data with '#' as a wall)
+if (F) {
+map <- lines2matrix(stri_split_fixed(pattern="\n", stri_trim("
+###############
+#.......#....E#
+#.#.###.#.###.#
+#.....#.#...#.#
+#.###.#####.#.#
+#.#.#.......#.#
+#.#.#####.###.#
+#...........#.#
+###.#.#####.#.#
+#...#.....#.#.#
+#.#.#.###.#.#.#
+#.....#...#.#.#
+#.###.#.#.#.#.#
+#S..#.....#...#
+###############"))[[1]])
+
+# ---- simple (no explicit turning)
+n <- build_nodes(map)
+e <- build_orthogonal_edges(
+  n, "#",
+  # don't walk to the start or from the end
+  additional_edge_filter=function (fromnode, tonode) fromnode$symbol != "E" & tonode$symbol != "S"
+)
+g <- build_graph(n, e)
+plot_graph_on_grid(g)
+
+
+# ---- more difficult (direction taken into account)
+n <- build_nodes_with_direction(map)
+e <- build_edges(
+  n,
+  function (fromnode, tonode) {
+    # don't walk through walls
+    fromnode$symbol != "#" &
+    tonode$symbol != "#" &
+    # don't walk from the end node anywher (including rotating)
+    fromnode$symbol != "E" &
+    # don't walk to the start node from elsewhere (but you can rotate)
+    !(fromnode$symbol != "S" & tonode$symbol == "S") &
+    (
+      # walking straight
+      (is_node_in_direction(fromnode, tonode) & fromnode$facing.direction == tonode$facing.direction)
+      |
+      # 90-degree turns on the spot
+      (fromnode$linear_i == tonode$linear_i & is_turn(fromnode$facing.direction, tonode$facing.direction, "both"))
+    )
+  }
+)
+e[, cost := ifelse(from_node_id == to_node_id, 1000, 1)]
+g <- build_graph(n, e)
+plot_graph_on_grid(g)
+}
