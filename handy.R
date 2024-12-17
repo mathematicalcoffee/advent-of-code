@@ -316,6 +316,8 @@ build_nodes <- function (grid) {
   nodes <- nodes[order(node_id)]
   return(nodes)
 }
+
+# TODO: this seems to be slow, whereas my original 2024/16.r is much faster.
 build_edges <- function(nodes, is_valid_edge, ...) {
   # better performance if you exclude bad nodes from the input list.
   # datatable with 1 edge connecting nodes if the edge is valid
@@ -452,4 +454,31 @@ e <- build_edges(
 e[, cost := ifelse(from_node_id == to_node_id, 1000, 1)]
 g <- build_graph(n, e)
 plot_graph_on_grid(g)
+}
+
+# ------ int64 --------
+# you need bit64 for this.
+# it does various operations making use of the bit64 package/int64 type, BUT
+#  endeavours to return doubles where possible (since lots of R functions muck
+#  up with int64)
+int2str <- function (x) {
+  # numeric -> string of 1s and 0s of 64 characters
+  as.bitstring(as.integer64(x))
+}
+bin2int <- function (x) {
+  # binary string -> double, can handle int64
+  as.double(as.integer64.bitstring(gsub(" ", "", x)))
+}
+stupid_xor <- function (x, y) {
+  # x, y: double, double -> double
+  # wow, the bit64 packages doesn't have bitwise xor, and the bitops package
+  #  doesn't support int64. This is the stupidest thing I have ever done.
+  # returns a double (but has to go via int64)
+  xx <- substring(as.bitstring(as.integer64(x)), seq_len(64), seq_len(64))
+  yy <- substring(as.bitstring(as.integer64(y)), seq_len(64), seq_len(64))
+  return(as.double(as.integer64.bitstring(paste(ifelse(xx==yy, "0", "1"), collapse=""))))
+}
+stupid_bitwShiftL <- function(x, pow) {
+  # i, pow: double, numeric -> double
+  as.double(x) * 2^pow
 }
