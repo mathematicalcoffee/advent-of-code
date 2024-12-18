@@ -34,5 +34,6 @@ Language: R. Too lazy to learn IO in other languages.
 |  15 | Really struggling now (this is encroaching on my time too much - had to manually inspect the example step-by-step to find a bug somewhere between 300-350) |
 |  16 | Did something recursive and stack overflowed. Couldn't remember how to rephrase it (like day 16 of last year) and ended up constructing a crazy graph instead. |
 |  17 | Very neat, but I took a long while (hours) to work out the trick, and then R doesn't have int64 (have to use a double)!!!! so I had to write Xor by casting doubles to string.. |
+|  18 | phew, thank goodness an easier one today.                                                                                                    |
 
 ![Day 14](./2024/14/day14.png)
