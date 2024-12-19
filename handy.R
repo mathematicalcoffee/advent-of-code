@@ -230,7 +230,7 @@ new_coords_matrix <- function (ij) {
   )
 }
 new_i <- function (i, direction=c(LEFT, DOWN, RIGHT, UP)) {
-  if (!(direction %in% ALL_DIRECTIONS))
+  if (!all(direction %in% ALL_DIRECTIONS))
     stop("Unknown direction")
   return(
     ifelse(direction == UP, i - 1,
@@ -239,7 +239,7 @@ new_i <- function (i, direction=c(LEFT, DOWN, RIGHT, UP)) {
   )
 }
 new_j <- function (j, direction=c(LEFT, DOWN, RIGHT, UP)) {
-  if (!(direction %in% ALL_DIRECTIONS))
+  if (!all(direction %in% ALL_DIRECTIONS))
     stop("Unknown direction")
   return(
     ifelse(direction == LEFT, j - 1,
@@ -275,6 +275,19 @@ is_orthogonal_adjacent <- function (from_i, from_j, to_i, to_j) {
     abs(from_i - to_i) + abs(from_j - to_j) == 1
   )
 }
+get_coords_reachable_in_steps <- function(min_n, max_n, from_i=0, from_j=0) {
+  # from the from-row/from-col, get the coordinates that are reachable in between
+  #  min_n to max_n steps, walking orthogonally.
+  offsets = expand.grid(
+    row=unique(c(from_i, +min_n:max_n, -min_n:max_n)),
+    col=unique(c(from_j, +min_n:max_n, -min_n:max_n))
+  )
+  offsets[between(abs(offsets[, 'row'] - 0) + abs(offsets[, 'col'] - 0), min_n, max_n), ]
+}
+get_coords_reachable_in_n_steps <- function (n, from_i=0, from_j=0) {
+  get_coords_reachable_in_steps(n, n, from_i, from_j)
+}
+
 
 # --------- graph ----------- #
 # library(igraph)
@@ -332,30 +345,32 @@ build_edges <- function(nodes, is_valid_edge, ...) {
   edges[, edge_label := sprintf("%s -> %s", nodes[J(from_node_id), node_label], nodes[J(to_node_id), node_label])]
   return(edges)
 }
-build_graph <- function (nodes, edges) {
-  g <- graph_from_edgelist(as.matrix(edges[, .(from_node_id, to_node_id)]), directed=TRUE)
+build_graph <- function (nodes, edges, directed) {
+  g <- graph_from_edgelist(as.matrix(edges[, .(from_node_id, to_node_id)]), directed=directed)
   # Note - disconnected vertices are in the graph unless they are off the end
   # i.e. the # vertices is 1:max(vertice_id refereneced the edges)
   missing_nodes <- setdiff(nodes$node_id, V(g))
   if (length(missing_nodes))
     g <- add_vertices(g, length(missing_nodes)) 
-  V(g)$label <- nodes[V(g), node_label]
-  V(g)$linear_i <- nodes[V(g), linear_i]
-  V(g)$row <- nodes[V(g), row]
-  V(g)$col <- nodes[V(g), col]
-  V(g)$symbol <- nodes[V(g), symbol]
-  E(g)$label <- edges$edge_label
+  setkey(nodes, node_id)
+  V(g)$label <- nodes[J(V(g)), node_label]
+  V(g)$linear_i <- nodes[J(V(g)), linear_i]
+  V(g)$row <- nodes[J(V(g)), row]
+  V(g)$col <- nodes[J(V(g)), col]
+  V(g)$symbol <- nodes[J(V(g)), symbol]
+  E(g)$label <- edges$edge_label # <-- is this correct?
   if (!is.null(edges$cost))
     E(g)$weight <- edges$cost
   return(g)
 }
-plot_graph_on_grid <- function (g, edge.arrow.size=0.5, ...) {
+plot_graph_on_grid <- function (g, vertex.size=5, edge.arrow.size=0.5, ...) {
   # plot a graph that came from one of these helpers
   # (expect attrs row, col, symbol)
   # and probably a $symbol
   plot(
     g,
     layout=cbind(V(g)$col, -V(g)$row),
+    vertex.size=vertex.size,
     vertex.shape="none",
     vertex.label=V(g)$symbol,
     edge.label=NA,
@@ -371,22 +386,39 @@ is_node_in_direction <- function(fromnode, tonode) {
   # is it EACTLY 1 STEP in direction (implies adjacent)
   is_in_direction(fromnode$row, fromnode$col, tonode$row, tonode$col, fromnode$facing.direction)
 }
-build_orthogonal_edges <- function(nodes, impassibles, additional_edge_filter) {
-  # edges on a grid. connect if orthogonal and not impassible (character vector)
-  # the edge-filter-fun if provided can filter out further edges: fromrow, torow -> bool
-  if (missing(impassibles)) impassibles <- character(0)
-  if (missing(additional_edge_filter)) additional_edge_filter <- function (...) return(TRUE)
-  return(
-    build_edges(
-      nodes,
-      function (fromnode, tonode) {
-        !fromnode$symbol %in% impassibles &
-        !tonode$symbol %in% impassibles &
-        is_node_adjacent(fromnode, tonode) &
-        additional_edge_filter(fromnode, tonode)
-      }
+build_orthogonal_edges <- function(nodes, impassibles, additional_edge_filter, min_node_distance=1, max_node_distance=1, directed=FALSE) {
+  # this version uses specific knowledge of rows/cols to do its joins to try
+  #  do it faster.
+  offs <- get_coords_reachable_in_steps(min_node_distance, max_node_distance, from_i=0, from_j=0)
+  if (!directed)
+    offs <- offs[offs[, 'row'] >= 0 & offs[, 'col'] >= 0, ]  # only half the directions are needed
+  setkey(nodes, row, col)
+  if (!missing(impassibles))
+    nodes <- nodes[!(symbol %in% impassibles)] # cut it down
+  edges <- nodes[
+    ,
+    .(
+      from_node_id=node_id,
+      to_row=from_row + offs[, 'row'],
+      to_col=from_col + offs[, 'col']
+    ),
+    by=.(from_row=row, from_col=col)
+  ]
+  edges[, to_node_id := nodes[.(to_row, to_col), node_id]]
+  edges <- edges[!is.na(to_node_id)] # non-existent destination node
+  setkey(nodes, node_id)
+  if (!missing(additional_edge_filter))
+    edges <- edges[additional_edge_filter(nodes[J(from_node_id)], nodes[J(to_node_id)])]
+  edges[, edge_id := .I]
+  edges[
+    , edge_label := sprintf(
+      "%s %s %s",
+      nodes[J(from_node_id), node_label],
+      ifelse(directed, "->", "-"),
+      nodes[J(to_node_id), node_label]
     )
-  )
+  ]
+  edges
 }
 # Here we have a graph representing (i, j, direction I am facing).
 # By default you can only walk to a square in the same direction you are facing.
@@ -394,14 +426,66 @@ build_orthogonal_edges <- function(nodes, impassibles, additional_edge_filter) {
 # TODO: node costs.
 build_nodes_with_direction <- function(grid) {
   nodes <- build_nodes(grid)
-  nodes <- nodes[, cbind(.SD, facing.direction=c(UP, DOWN, LEFT, RIGHT)), by=names(nodes)]
-  nodes[, node_label := sprintf("%i,%i facing %s", row, col, DIRECTION_LABELS[facing.direction])]
-  nodes[, node_id := .I]
+  nodes <- add_directions_to_nodes(nodes)
   return(nodes)
 }
+add_directions_to_nodes <- function (nodes) {
+  nodes4 <- nodes[, .(facing=c(UP, DOWN, LEFT, RIGHT)), by=names(nodes)]
+  nodes4[, node_label := sprintf("%i,%i%s", row, col, DIRECTION_LABELS[facing])]
+  nodes4[, node_id := .I]
+  setkeyv(nodes4, key(nodes))
+  return(nodes4)
+}
+build_grid_with_turn_directions <- function(grid, impassibles, additional_edge_filter, min_node_distance=1, max_node_distance=1) {
+  # returns nodes and edges (to make a graph) that represents a grid where direction is taken into account.
+  # * walking forward and turning to face a different direction are explicitly represented
+  #   (and can be costed separately)
+  # * currently you CANNOT U-turn
+  # * providing `impassibles` (list of symbols) means you're not allowed to walk in that direction
+  # * min_node_distance/max_node_distance: a node will be connected to all nodes it can reach in these number of steps
+  # NB this ONLY makes sense with directed=True
+  # MIN/MAX NODE DISETANCE ARE IGNORED ATM AND ALWAYS 1
+  nodes <- build_nodes(grid)
+  # now copy-paste it for each direction and only join between directions from a node to itself (representing turning)
+  # but maybe drop all the impassible nodes except the 'first' so you can draw a picture still
+  if (missing(impassibles)) impassibles <- c()
+  nodes4 <- add_directions_to_nodes(nodes)[facing == UP | !(symbol %in% impassibles)]
+  nodes4[, node_id := .I]
+  setkey(nodes4, node_id)
 
+  edges <- build_orthogonal_edges(nodes, impassibles, min_node_distance=min_node_distance, max_node_distance=max_node_distance, directed=TRUE)
+  edges[from_row == to_row & from_col < to_col, facing := RIGHT]
+  edges[from_row == to_row & from_col > to_col, facing := LEFT]
+  edges[from_col == to_col & from_row < to_row, facing := DOWN]
+  edges[from_col == to_col & from_row > to_row, facing := UP]
+  edges <- rbind(
+    edges[, .(from_row, from_col, from_node_id, from_facing=facing, to_row, to_col, to_facing=facing)],
+    nodes4[  # turning left and right
+      !(symbol %in% impassibles),
+      .(from_row=row, from_col=col, from_node_id=node_id, from_facing=facing,
+        to_row=row, to_col=col,
+        # this will recycle everything else
+        to_facing=c(LEFT_TURN[facing], RIGHT_TURN[facing]))
+    ]
+  )
+  edges[nodes4, to_node_id := node_id, on=.(to_row=row, to_col=col, to_facing=facing)]
+  edges <- edges[!is.na(to_node_id)] # walking to out of bounds, to impassible, ...
+  if (!missing(additional_edge_filter))
+    edges <- edges[additional_edge_filter(nodes4[J(from_node_id)], nodes4[J(to_node_id)])]
+  edges[, edge_id := .I]
+  edges[
+    , edge_label := sprintf(
+      "%s -> %s",
+      nodes4[J(from_node_id), node_label],
+      nodes4[J(to_node_id), node_label]
+    )
+  ]
+  edges <- edges[, .(from_node_id, from_row, from_col, from_facing, to_node_id, to_row, to_col, to_facing, edge_id, edge_label)]
+  return(list(nodes=nodes4, edges=edges))
+}
+
+if (FALSE) {
 # EXAMPLE (grid-like data with '#' as a wall)
-if (F) {
 map <- lines2matrix(stri_split_fixed(pattern="\n", stri_trim("
 ###############
 #.......#....E#
@@ -421,39 +505,24 @@ map <- lines2matrix(stri_split_fixed(pattern="\n", stri_trim("
 
 # ---- simple (no explicit turning)
 n <- build_nodes(map)
-e <- build_orthogonal_edges(
-  n, "#",
-  # don't walk to the start or from the end
-  additional_edge_filter=function (fromnode, tonode) fromnode$symbol != "E" & tonode$symbol != "S"
-)
-g <- build_graph(n, e)
+e <- build_orthogonal_edges(n, "#")
+g <- build_graph(n, e, directed=FALSE)
 plot_graph_on_grid(g)
-
 
 # ---- more difficult (direction taken into account)
-n <- build_nodes_with_direction(map)
-e <- build_edges(
-  n,
-  function (fromnode, tonode) {
-    # don't walk through walls
-    fromnode$symbol != "#" &
-    tonode$symbol != "#" &
-    # don't walk from the end node anywher (including rotating)
+o <- build_grid_with_turn_directions(
+  map, "#",
+  additional_edge_filter = function (fromnode, tonode) {
+    # don't walk from the end node anywhere (including rotating)
     fromnode$symbol != "E" &
     # don't walk to the start node from elsewhere (but you can rotate)
-    !(fromnode$symbol != "S" & tonode$symbol == "S") &
-    (
-      # walking straight
-      (is_node_in_direction(fromnode, tonode) & fromnode$facing.direction == tonode$facing.direction)
-      |
-      # 90-degree turns on the spot
-      (fromnode$linear_i == tonode$linear_i & is_turn(fromnode$facing.direction, tonode$facing.direction, "both"))
-    )
+    !(fromnode$symbol != "S" & tonode$symbol == "S")
   }
 )
-e[, cost := ifelse(from_node_id == to_node_id, 1000, 1)]
-g <- build_graph(n, e)
-plot_graph_on_grid(g)
+o$edges[, cost := ifelse(from_node_id == to_node_id, 1000, 1)]
+g <- build_graph(o$nodes, o$edges, directed=TRUE)
+plot_graph_on_grid(g, edge.arrow.size=0.2)
+
 }
 
 # ------ int64 --------

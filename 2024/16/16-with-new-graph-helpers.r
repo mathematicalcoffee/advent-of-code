@@ -32,19 +32,29 @@ is_valid_edge <- function (fromnode, tonode) {
 }
 
 map <- lines2matrix(input)
-nodes <- build_nodes_with_direction(map)
-# TODO: making the edges is quite slow, perhaps because of how I am doing it in data.table
-edges <- build_edges(nodes[symbol != '#'], is_valid_edge)
+o <- build_grid_with_turn_directions(
+  map, impassibles="#",
+  additional_edge_filter = function (fromnode, tonode) {
+    # don't walk from the end node anywhere (including rotating)
+    fromnode$symbol != "E" &
+      # don't walk to the start node from elsewhere (but you can rotate)
+      !(fromnode$symbol != "S" & tonode$symbol == "S")
+  }
+)
+nodes <- o$nodes
+edges <- o$edges
+edges[, cost := ifelse(from_facing != to_facing, 1000, 1)]
+g <- build_graph(nodes, edges, directed=TRUE)
+# plot_graph_on_grid(g, edge.arrow.size=0.2)
 
-edges[nodes, from_linear_i := linear_i, on=.(from_node_id=node_id)]
-edges[nodes, to_linear_i := linear_i, on=.(to_node_id=node_id)]
-edges[, cost := ifelse(from_linear_i == to_linear_i, 1000, 1)]
-g <- build_graph(nodes, edges)
-start.node <- nodes[from.symbol == 'S' & leaving.direction == RIGHT, node_id]
-end.nodes <- nodes[from.symbol == 'E', node_id]
+start.node <- nodes[symbol == 'S' & facing == RIGHT, node_id]
+end.nodes <- nodes[symbol == 'E', node_id]
 
 # ----- PART 1 -----
 d <- distances(g, v=start.node, to=end.nodes, mode="out")
+p <- shortest_paths(g, from=start.node, t=end.nodes, mode="out")
+V(g)[p$vpath[[4]]]$label
+
 print(paste("min path cost is", min(d)))
 
 # ----- PART 2 -----
