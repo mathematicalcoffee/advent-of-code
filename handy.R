@@ -279,8 +279,8 @@ get_coords_reachable_in_steps <- function(min_n, max_n, from_i=0, from_j=0) {
   # from the from-row/from-col, get the coordinates that are reachable in between
   #  min_n to max_n steps, walking orthogonally.
   offsets = expand.grid(
-    row=unique(c(from_i, +min_n:max_n, -min_n:max_n)),
-    col=unique(c(from_j, +min_n:max_n, -min_n:max_n))
+    row=from_i + unique(c(0, +min_n:max_n, -min_n:max_n)),
+    col=from_j + unique(c(0, +min_n:max_n, -min_n:max_n))
   )
   offsets[between(abs(offsets[, 'row'] - 0) + abs(offsets[, 'col'] - 0), min_n, max_n), ]
 }

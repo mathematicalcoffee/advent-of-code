@@ -36,5 +36,6 @@ Language: R. Too lazy to learn IO in other languages.
 |  17 | Very neat, but I took a long while (hours) to work out the trick, and then R doesn't have int64 (have to use a double)!!!! so I had to write Xor by casting doubles to string.. |
 |  18 | phew, thank goodness an easier one today.                                                                                                    |
 |  19 | REGEX FCK YEAH (part 1) but for part 2 I don't really have the hang of memoisation yet                                                       |
+|  20 | had a lot of trouble understanding the wording.                                                                                              |
 
 ![Day 14](./2024/14/day14.png)
