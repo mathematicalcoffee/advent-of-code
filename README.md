@@ -37,5 +37,6 @@ Language: R. Too lazy to learn IO in other languages.
 |  18 | phew, thank goodness an easier one today.                                                                                                    |
 |  19 | REGEX FCK YEAH (part 1) but for part 2 I don't really have the hang of memoisation yet                                                       |
 |  20 | had a lot of trouble understanding the wording.                                                                                              |
+|  21 | this one pretzel'd my brain, took me til like 1.30 to muddle my way through a few different attempts :/                                      |
 
 ![Day 14](./2024/14/day14.png)

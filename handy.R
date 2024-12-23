@@ -7,6 +7,14 @@ QUESTION_URL_FORMAT <- "https://adventofcode.com/2024/day/%i"
 COOKIE <- readLines("../AOC_SESSION_TOKEN")[1] # brittle...
 options(digits=20) # printing long ints
 
+collapse <- function (..., sep=", ") {
+  paste(..., collapse=sep)
+}
+chars <- function (sequence) {
+  # split a string to individual characters
+  strsplit(sequence, "")[[1]]
+}
+
 i2ij <- function (i, dims) {
   # col-major
   return(cbind(
