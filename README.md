@@ -40,5 +40,6 @@ Language: R. Too lazy to learn IO in other languages.
 |  21 | this one pretzel'd my brain, took me til like 1.30 to muddle my way through a few different attempts :/                                      |
 |  22 | somehow my matrix-based cache was very slow, and pasting the indices to form a string(= variable name) and storing as individual variables was faster? even then, poor old bruteforceman got a workout |
 |  23 | thank god for an easy one (cheesed it with graph theory, but is it cheese to identify what the question is asking for? I don't think so.     |
+|  24 | part 2 was frustrating for someone who doesn't know how an adder is supposed to be constructed out of logic gates                            |
 
 ![Day 14](./2024/14/day14.png)
