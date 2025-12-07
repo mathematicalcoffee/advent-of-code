@@ -2,8 +2,8 @@ library(xml2)
 library(httr)
 library(stringi)
 
-INPUT_URL_FORMAT <- "https://adventofcode.com/2024/day/%i/input"
-QUESTION_URL_FORMAT <- "https://adventofcode.com/2024/day/%i"
+INPUT_URL_FORMAT <- "https://adventofcode.com/2025/day/%i/input"
+QUESTION_URL_FORMAT <- "https://adventofcode.com/2025/day/%i"
 COOKIE <- readLines("../AOC_SESSION_TOKEN")[1] # brittle...
 options(digits=20) # printing long ints
 
@@ -148,7 +148,7 @@ get_input_data <- function (day) {
   # must return a list
   input_url <- sprintf(INPUT_URL_FORMAT, as.integer(day))
   input <- readLines(
-    con=url(input_url, headers=c(Cookie=sprintf("session=%s", COOKIE)))
+    con=url(input_url, headers=c(Cookie=sprintf("session=%s", COOKIE), `User-Agent`="mathematical.coffee@gmail.com via R"))
   )
   return(list(input))
 }
