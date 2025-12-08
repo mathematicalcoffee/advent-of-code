@@ -14,7 +14,11 @@ Biggest lesson: don't try to be mathsy smart, just write the for loop :(
 |  05 | spent way too long writing a "reduce overlapping intervals" function but then read another implementation which was way simpler lol          |
 |  06 | I enjoyed the story of part 2.                                                                                                               |
 |  07 | I hate these beam-splitter ones. And recursive stuff. That was hard, but I made a cute picture. |
+|  08 | Thought I misread the problem in part1 and spent ages coding up something with the new logic then realised I was right all along and had just typo'd |
 
 Day 7.
 
-![Day 7](./2025/7/day7.png)
+![Day 7](./2025/07/day7.png)
+
+Day 8.
+![Day 8](./2025/08/day8.png)
