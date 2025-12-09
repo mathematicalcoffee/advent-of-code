@@ -28,6 +28,16 @@ ij2i <- function(i, j, dims) {
   (j - 1) * dims[1] + i
 }
 
+i2distij <- function (i, n) {
+  # black magic! https://atrebas.github.io/post/2021-01-17-index_to_lower_triangular_subscripts/
+  # i2ij, but on a col-wise lower-triangle matrix that excludes the diagonal ?!
+  kp <- n * (n - 1) / 2 - i
+  p  <- floor((sqrt(1 + 8 * kp) - 1) / 2)
+  row  <- n - (kp - p * (p + 1) / 2)
+  col  <- n - 1 - p
+  cbind(row=row, col=col)
+}
+
 in_bounds <- function (i, j, dims) {
   return(
     i >= 1 &
