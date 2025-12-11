@@ -1,5 +1,6 @@
 rm(list=ls())
 library(data.table)
+library(testthat)
 source("../../handy.R")
 ex <- get_and_save_example_input()
 input <- get_and_save_input()
