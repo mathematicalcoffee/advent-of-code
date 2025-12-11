@@ -543,6 +543,32 @@ plot_graph_on_grid(g, edge.arrow.size=0.2)
 
 }
 
+
+num_simple_paths <- function(g, FROM, TO) {
+  # number of ways to get from FROM to TO in a directed acyclic graph
+  # the idea is that the number of ways to the next node is the sum of
+  #  the ways to get to all of its parents
+  if (!is_dag(g)) {
+    # for undirected you could probably could make every undirected edge to
+    #  2 directed and a criteria that you cannot go immediately back to where
+    #  you came from
+    stop("can't do this on undirected graphs")
+  }
+  V(g)$nways <- 0
+ 
+  V(g)[name == FROM]$nways <- 1 # seed.
+  children <- V(g)[.outnei(V(g)[name == FROM])]
+  
+  while (length(children)) {
+    for (child.v in children) {
+      parent.vs <- V(g)[.innei(child.v)]
+      V(g)[child.v]$nways <- sum(V(g)[parent.vs]$nways)
+    }
+    children <- V(g)[.outnei(children)]
+  }
+  sum(V(g)[name == TO]$nways)
+}
+
 # ------ int64 --------
 # you need bit64 for this.
 # it does various operations making use of the bit64 package/int64 type, BUT

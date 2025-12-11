@@ -16,19 +16,30 @@ Biggest lesson: don't try to be mathsy smart, just write the for loop :(
 |  07 | I hate these beam-splitter ones. And recursive stuff. That was hard, but I made a cute picture. |
 |  08 | Thought I misread the problem in part1 and spent ages coding up something with the new logic then realised I was right all along and had just typo'd |
 |  09 | Cheesed part 2 by VISUAL INSPECTION AND TRIAL AND ERROR YEAHHHHH |
+|  10 | ahh, the AoC question where you seem to have to use lpsolve, i.e. not a programming problem |
+|  11 | Quite frustrating - mashed away for 5h and came up with something workable but had a typo and couldn't work it out. Then realised that my day7 code AS-IS would solve parts 1 and 2 instantly. :( |
 
-Day 7.  
+### Day 7
 ![Day 7](./2025/07/day7.png)
 
-Day 8.  
+### Day 8
 ![Day 8](./2025/08/day8.png)
 
-Day 9 - initial attempt  
+### Day 9
+#### initial attempt  
 ![Day 9](./2025/09/day9part2-derp.png)
 
-Oopsies  
+#### Oopsies  
 ![Day 9 - oopsies](./2025/09/oopsies1.png)
 ![Day 9 - oopsies](./2025/09/oopsies2.png)
 
-Got it right this time  
+#### Got it right this time  
 ![Day 9 - final](./2025/09/day9part2.png)
+
+### Day 11
+
+#### My input next to a simplified version
+![Day 11](./2025/11/day11-simplified-graph-next-to-normal.png)
+
+#### Simplified version, edge weights ~ sqrt(num paths on original graph)
+![Day 11](./2025/11/day11-simplified-graph.png)
